@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- Mình tạo các file bean ở resources này còn ở bên kia mình import vào 
+		thôi -->
+
+	<!-- Sử dụng IOC Container khai baos đối tượng nhân viên -->
+	<!-- Lưu ý: Mỗi bean đại diện cho 1 class nhanvien -->
+	<!-- <bean name="nhanvien" class="com.TanDung.entity.NhanVien" init-method="Start" 
+		factory-method="createNhanVien"> đã khai báo NhanVien nằm trong IOC Controlle 
+		property khai báo giá trị thuộc tính sẵn luôn <property name="tenNhanVien" 
+		value="Nguyen Tan Dung"></property> <property name="diaChi" value="90 Nguyen 
+		Hue"></property> <property name="tuoi" value="22"></property> Cái factory-method="createNhanVien" 
+		khi khai báo cái này thì nó sẽ chạy cái hàm này luôn Gán giá trị cho list 
+		nhân viên <property name="list"> <list> <value>Nguyen Tan Dung</value> <value>Nguyen 
+		Tan Dung 1</value> <value>Nguyen Tan Dung 2</value> <value>Nguyen Tan Dung 
+		3</value> </list> </property> Học cấu hình bean properties <property name="properties"> 
+		<props> <prop key="jdbc"> mysql </prop> <prop key="user"> root </prop> <prop 
+		key="password"> 123456 </prop> </props> </property> </bean> -->
+	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		- Định dạng lại đường dẫn mà view server hướng tới, ta muốn view tìm file 
+		jsp trong file này thì phải đinhn nghĩa <property name = "prefix" value = 
+		"/WEB-INF/views/" /> - custem lại đường dẫn <property name = "suffix" value 
+		= ".jsp" /> - mặc định không cần ghi .jsp nữa </bean> -->
+
+ <!-- 
+	<bean id="databasethoitrang"
+		class="com.TanDung.entity.DatabaseThoiTrang">
+		<property name="dataSource" ref="dataSource" />
+	</bean> -->
+
+	<!-- Kết nối database mysql Cái autoWired căn cứ vào cái id này nhé nên 
+		đặt để nhớ luon -->
+	 <bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/thoitrang?useSSL=false&amp;useLegacyDatetimecode=false" />
+		<property name="username" value="root" />
+		<property name="password" value="1234" />
+	</bean>
+
+<!-- 	Đầu tiên khai báo cái này để sử dụng hibernate, khai báo cái này để 
+		SessionFactory kết nối được database mysql của ta -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+ 		<property name="packagesToScan" value="com.TanDung.entity"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+<!-- 
+	Khai báo transaction không bắt buộc nhưng người ta khuyên nên làm -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean> <!-- Lưu ý cái này xong ta phản scan cho phép sử dụng .Ví dụ: nó cho phép sử dụng các @ này nọ bằng  <tx:annotation-driven/> -->
+	 
+	 <tx:annotation-driven
+		transaction-manager="transactionManager" />
+</beans>
